@@ -1,0 +1,71 @@
+#########################################################
+# Script   :Preprocess input data                       #
+# Argument :$input_file($1)                             #
+# Output   :STDOUT                                      #
+# Date     :15-May-2023                                 #
+# Author   :Wiz Zhang                                   #
+# StudentID:23210735                                    #
+# Project  :OSTS4407-OSTS Project2 'preprocess'         #
+#########################################################
+#!/bin/bash
+input_file=$1
+
+#Comfirm file integrity
+if [ ! -f "$input_file" ]; then
+	echo "Error:Input file doesn't exit."
+	exit 1
+fi
+
+#Process first line and add new columns
+awk -F'\t' '{
+    if (NR ==1) {
+        print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t""Month""\t""Year"
+    }
+    else {
+    	#Skip toxic data
+	if ($3 == "" || $3 < 0) {
+		print "Error:Empty or negative value in column $3 at line "NR > "/dev/stderr"
+		next
+	}
+        #Keep skippin empty data
+        if ($4 == "" || $5 == "") {
+            print "Error: Empty Date or Breach Type field at line " NR > "/dev/stderr"
+            next
+        }
+        split($5,breach_type_list,"[/,]")
+        split($4,date_list,"/")
+	    #Handle breach_type data month is first element year is third element
+	    month = +date_list[1] #Convert month to number kill the start "0"
+	    year = date_list[3]
+	    breach_type = breach_type_list[1]
+
+	    #Ensure year is 4digits Add 19 or 20 if it is 2 digits
+	    if (length(year) == 2) {
+		    if (year > 23) {
+			    year = "19"year
+		    }
+		    else {
+		    year="20"year
+		    }
+	    }
+	    #Ensure year is 4 digits Cut the rest if it is a range
+	    if (length(year) > 4) {
+		    year = substr(year,1,4)
+	    }
+
+        #Skip month data not betwen 1-12
+        if (month < 1 || month > 12) {
+            print "Error: Invalid month at line " NR > "/dev/stderr"
+            next
+        }
+	
+        print $1"\t"$2"\t"$3"\t"$4"\t"breach_type"\t"month"\t"year
+    }
+} ' $input_file
+
+<< 'COMMENT'
+I'm soo thankful to myself as I try to diff the output.tsv and clean.tsv
+If I didnt do that, Im pretty sure I dont know there is even a breach 
+event happened on 1997! OK! write another if sentence :) I almost loose 
+that mark, soo close :)
+'COMMENT'

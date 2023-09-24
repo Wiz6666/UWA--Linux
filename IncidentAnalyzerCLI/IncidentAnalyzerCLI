@@ -1,0 +1,56 @@
+# CITS4407-OSTS Wiz Zhang SID:23210735 ٩(✿∂‿∂✿)۶～～
+#############################################################################################################################################################################
+#!/bin/bash
+input_file=$1
+command=$2
+case "$command" in
+    "maxstate")
+        state_with_max_incidents=$(awk -F'\t' 'NR>1 {print $2}' "$input_file" | sort | uniq -c | sort -nr | head -1 )
+        count=$(echo $state_with_max_incidents | cut -d' ' -f1)
+        state_code=$(echo $state_with_max_incidents | cut -d' ' -f2)
+        echo "State with greatest number of incidents is: $state_code with count $count"
+        ;;
+    "maxyear")
+        year_with_max_incidents=$(awk -F'\t' 'NR>1 {print $8}' "$input_file" | sort | uniq -c | sort -nr | head -1 )
+        count=$(echo $year_with_max_incidents | cut -d' ' -f1)
+        year=$(echo $year_with_max_incidents | cut -d' ' -f2)
+        echo "Year with greatest number of incidents is: $year with count $count"
+        ;;
+    [A-Z][A-Z])
+        state=$command
+        year_with_max_incidents=$(awk -F'\t' -v state="$state" 'NR>1 && $2==state {print $8}' "$input_file" | sort | uniq -c | sort -nr | head -1 )
+        count=$(echo $year_with_max_incidents | cut -d' ' -f1)
+        year=$(echo $year_with_max_incidents | cut -d' ' -f2)
+        echo "Year with greatest number of incidents for $state is in $year with count $count"
+        ;;
+    [0-9][0-9][0-9][0-9])
+        year=$command
+        state_with_max_incidents=$(awk -F'\t' -v year="$year" 'NR>1 && $8==year {print $2}' "$input_file" | sort | uniq -c | sort -nr | head -1 )
+        count=$(echo $state_with_max_incidents | cut -d' ' -f1)
+        state_code=$(echo $state_with_max_incidents | cut -d' ' -f2)
+        echo "State with greatest number of incidents for $year is in $state_code with count $count"
+        ;;
+    *)
+	if [[ "$command" == max* ]]; then
+		echo "The max commands are either maxstate or maxyear"
+	else
+        echo "Invalid command. The commands should be maxstate/maxyear/state_code/year"
+	fi
+        ;;
+esac
+
+#############################################################################################################################################################################
+: "
+COMMENT
+ Name:Weisi Zhang SID:23210735 CITS4407OSTS Project 
+For those four commands I try to use pipes to decorate the raw data into the information I want
+First, use awk to separate the data, pass the first line and print the state_code or year_code. Second, sort the data and use uniq-c to count the number. Third, sort the data again and only keep the first one. Finally,use the cut to echo the count, year/state from $year/state with max incidents
+
+The Third and the Forth command actually is similar to the maxstate or maxyear
+I just need to use a new variable to receive the state_code/year_code value I input as command, and then use awk -v that only print State_code/Year_code when the year($8) or state($2) is the same as input command
+For the rest, the logic is all the same like the first two command
+
+For the whole structure, I use case sentence but not if sentence, so I can read the code easily.
+That's all on my mind, thank you~
+"
+#############################################################################################################################################################################

@@ -1,0 +1,79 @@
+#########################################################
+# Script   :Analysis input data                         #
+# Argument :$input_file($1)                             #
+# Output   :STDOUT                                      #
+# Date     :22-May-2023                                 #
+# Author   :Wiz Zhang                                   #
+# StudentID:23210735                                    #
+# Project  :OSTS4407-OSTS Project2 'breach_per_month'   #
+#########################################################
+
+#!/bin/bash
+input_file=$1
+
+#Verify input fiile
+if [ ! -f "$input_file" ]; then
+	echo "Error: Input file does not exist."
+	exit 1
+fi
+
+gawk -F'\t' 'BEGIN {
+    OFS = "\t"
+}
+# Calculate frequency for each month
+NR > 1 {
+    month_index = $6
+    count[month_index]++
+}
+
+END {
+    # Calculate the median of frequencies
+    n = asort(count, sorted_count)
+
+    if (n % 2 == 1) {
+        median = sorted_count[int(n/2)+1]
+    }
+    else {
+        median = (sorted_count[n/2] + sorted_count[n/2+1]) / 2
+    }
+    print "MEDIAN = " median
+
+    # Calculate MAD
+    for (i = 1; i <= n; i++) {
+        dev[i] = sorted_count[i] - median
+        if (dev[i] < 0) dev[i] = -dev[i]
+    }
+    n = asort(dev, sorted_dev)
+    if (n % 2 == 1) {
+        mad = sorted_dev[int(n/2)+1]
+    }
+    else {
+        mad = (sorted_dev[n/2] + sorted_dev[n/2+1]) / 2
+    }
+    print "MAD = " mad
+    print "----------------------------"
+    print "Month", "Total", "Deviation"
+
+    # Use month string change month number,print show times for each month
+    split("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec", month, " ")
+    
+    #Compare difference between count&median and mad
+    for (i = 1; i <= n; i++) {
+        if (count[i] > median + mad) {
+            print month[i], count[i], "++"
+        } 
+        else if (count[i] < median - mad) {
+            print month[i], count[i], "--"
+        } 
+        else {
+            print month[i], count[i]
+        }
+    }
+}' "$input_file"
+
+<< "COMMENT"
+Easier than preprocess as I can just open the tsv file 
+in Excel, calculate the median and MAD by myself and 
+double check. After I check they are the same number, 
+I felt so relief :)
+"COMMENT"
