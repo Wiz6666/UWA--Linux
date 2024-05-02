@@ -1,4 +1,4 @@
-# CITS4407-OSTS Wiz Zhang SID:23210735 ٩(✿∂‿∂✿)۶～～
+# CITS4407-OSTS Wiz Zhang SID:23210735
 #############################################################################################################################################################################
 #!/bin/bash
 input_file=$1
@@ -39,18 +39,3 @@ case "$command" in
         ;;
 esac
 
-#############################################################################################################################################################################
-: "
-COMMENT
- Name:Weisi Zhang SID:23210735 CITS4407OSTS Project 
-For those four commands I try to use pipes to decorate the raw data into the information I want
-First, use awk to separate the data, pass the first line and print the state_code or year_code. Second, sort the data and use uniq-c to count the number. Third, sort the data again and only keep the first one. Finally,use the cut to echo the count, year/state from $year/state with max incidents
-
-The Third and the Forth command actually is similar to the maxstate or maxyear
-I just need to use a new variable to receive the state_code/year_code value I input as command, and then use awk -v that only print State_code/Year_code when the year($8) or state($2) is the same as input command
-For the rest, the logic is all the same like the first two command
-
-For the whole structure, I use case sentence but not if sentence, so I can read the code easily.
-That's all on my mind, thank you~
-"
-#############################################################################################################################################################################
