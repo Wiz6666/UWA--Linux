@@ -71,9 +71,3 @@ END {
     }
 }' "$input_file"
 
-<< "COMMENT"
-Easier than preprocess as I can just open the tsv file 
-in Excel, calculate the median and MAD by myself and 
-double check. After I check they are the same number, 
-I felt so relief :)
-"COMMENT"
